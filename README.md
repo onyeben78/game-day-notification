@@ -18,8 +18,6 @@ This project is an alert system that sends real-time NFL game day score notifica
 ---
 
 ## **Technical Architecture**
-![NFL_API](https://github.com/user-attachments/assets/5e19635e-0685-4c07-9601-330f7d1231f9)
-
 ![image](https://github.com/user-attachments/assets/e0b376bb-1e92-4c5b-ae20-adf63c876a15)
 
 
