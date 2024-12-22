@@ -8,13 +8,13 @@ def format_game_data(game):
     status = game.get("Status", "Unknown")
     away_team = game.get("AwayTeam", "Unknown")
     home_team = game.get("HomeTeam", "Unknown")
-    final_score = f"{game.get('AwayTeamScore', 'N/A')}-{game.get('HomeTeamScore', 'N/A')}"
+    final_score = f"{game.get('AwayTeamScore')}-{game.get('HomeTeamScore')}"
     start_time = game.get("DateTime", "Unknown")
     channel = game.get("Channel", "Unknown")
     
     # Format quarters
     quarters = game.get("Quarters", [])
-    quarter_scores = ', '.join([f"Q{q['Number']}: {q.get('AwayScore', 'N/A')}-{q.get('HomeScore', 'N/A')}" for q in quarters])
+    quarter_scores = ', '.join([f"Q{q['Number']}: {q.get('AwayScore')}-{q.get('HomeScore')}" for q in quarters])
     
     if status == "Final":
         return (
@@ -26,11 +26,11 @@ def format_game_data(game):
             f"Quarter Scores: {quarter_scores}\n"
         )
     elif status == "InProgress":
-        last_play = game.get("LastPlay", "N/A")
+        last_play = game.get("LastPlay")
         return (
             f"Game Status: {status}\n"
             f"{away_team} vs {home_team}\n"
-            f"Current Score: {final_score}\n"
+            f"Current Score: {quarter_scores}\n"
             f"Last Play: {last_play}\n"
             f"Channel: {channel}\n"
         )
@@ -50,8 +50,8 @@ def format_game_data(game):
 
 def lambda_handler(event, context):
     # Get environment variables
-    api_key = os.getenv("NBA_API_KEY")
-    sns_topic_arn = os.getenv("SNS_TOPIC_ARN")
+    api_key = "fca634d02ce64cae91613c17993ce1e3"
+    sns_topic_arn = "arn:aws:sns:us-east-1:891377308029:NFL_scores"
     sns_client = boto3.client("sns")
     
     # Adjust for Central Time (UTC-6)
@@ -59,11 +59,11 @@ def lambda_handler(event, context):
     central_time = utc_now - timedelta(hours=6)  # Central Time is UTC-6
     today_date = central_time.strftime("%Y-%m-%d")
     
-    print(f"Fetching games for date: {today_date}")
+    print(f"Fetching games for date: {2024-12-22}")
     
     # Fetch data from the API
-    api_url = f"https://api.sportsdata.io/v3/nba/scores/json/GamesByDate/{today_date}?key={api_key}"
-    print(today_date)
+    api_url = f"https://api.sportsdata.io/v3/nfl/scores/json/ScoresByDateFinal/2024-12-22?key=fca634d02ce64cae91613c17993ce1e3"
+    print(2024-12-22)
      
     try:
         with urllib.request.urlopen(api_url) as response:
@@ -82,7 +82,7 @@ def lambda_handler(event, context):
         sns_client.publish(
             TopicArn=sns_topic_arn,
             Message=final_message,
-            Subject="NBA Game Updates"
+            Subject="NFL Game Updates"
         )
         print("Message published to SNS successfully.")
     except Exception as e:
